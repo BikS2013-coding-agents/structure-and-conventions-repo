@@ -20,7 +20,9 @@ At the start of every session the mod:
 1. **Finds the project's `CLAUDE.md`.** It uses `CLAUDE.md` at the project root if there is one.
    Otherwise it uses the git top level, where it creates the file. It skips the home folder,
    because the user-level file lives in `~/.claude`. It also skips a folder that has no
-   `CLAUDE.md` and isn't in a git repository.
+   `CLAUDE.md` and isn't in a git repository. It also skips a `CLAUDE.md` that is really the user-level
+   `~/.claude/CLAUDE.md` (a session started in `~/.claude`, or in the folder that file links into),
+   which would otherwise load the block twice in every project.
 2. **Compares that file's block with the master.** The tags count only when each is alone on
    its own line.
 3. **Brings the file up to date:**

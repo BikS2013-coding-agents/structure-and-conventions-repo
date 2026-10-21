@@ -28,13 +28,35 @@ async function target($: $): Promise<Target> {
   const root = await $.session.root()
   if (root === home) return { skip: 'the session runs in the home folder' }
 
-  if (await $.fs.exists(`${root}/CLAUDE.md`)) return { path: `${root}/CLAUDE.md` }
+  if (await $.fs.exists(`${root}/CLAUDE.md`)) return guardUserLevel($, home, `${root}/CLAUDE.md`)
 
   const { stdout, exitCode } = await $.process.run(['git', '-C', root, 'rev-parse', '--show-toplevel'])
   if (exitCode !== 0) return { skip: `${root} has no CLAUDE.md and is not in a git repository` }
   const top = stdout.trim()
   if (top === home) return { skip: 'the git top level is the home folder' }
-  return { path: `${top}/CLAUDE.md` }
+  return guardUserLevel($, home, `${top}/CLAUDE.md`)
+}
+
+/** Where a path really lands, or undefined when it leads nowhere. */
+async function realPath($: $, path: string): Promise<string | undefined> {
+  if (!(await $.fs.exists(path))) return undefined
+  return (await $.fs.stat(path, { resolve: true })).realPath
+}
+
+/**
+ * Never the user-level CLAUDE.md: a session started in ~/.claude, or in the repository
+ * ~/.claude/CLAUDE.md links into, finds that file as its project CLAUDE.md, and the block
+ * written there would load in every project on top of each project's own copy. Compared
+ * by where both paths land, ignoring letter case (macOS file systems are
+ * case-insensitive, and the user-level file may be linked as claude.md).
+ */
+async function guardUserLevel($: $, home: string, path: string): Promise<Target> {
+  const landsAt = await realPath($, path)
+  const userLevel = await realPath($, `${home}/.claude/CLAUDE.md`)
+  if (landsAt !== undefined && userLevel !== undefined && landsAt.toLowerCase() === userLevel.toLowerCase()) {
+    return { skip: `${path} is the user-level CLAUDE.md` }
+  }
+  return { path }
 }
 
 /** The master block shipped with the plugin. A missing or tagless master is an error. */

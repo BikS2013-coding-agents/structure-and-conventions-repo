@@ -1,6 +1,6 @@
 {
   "name": "structure-and-conventions",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Keeps the <structure-and-conventions> documentation-map block in every project's CLAUDE.md: checked at the start of each session, and added or updated when missing or outdated.",
   "author": {
     "name": "Giorgos Marinos"
