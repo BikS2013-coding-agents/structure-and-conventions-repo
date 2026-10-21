@@ -1,0 +1,21 @@
+{
+  "name": "structure-and-conventions",
+  "owner": {
+    "name": "Giorgos Marinos"
+  },
+  "metadata": {
+    "description": "The <structure-and-conventions> documentation map, kept in every project's CLAUDE.md by a Claude Code mod",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "structure-and-conventions",
+      "description": "Keeps the <structure-and-conventions> documentation-map block in every project's CLAUDE.md: checked at the start of each session, and added or updated when missing or outdated.",
+      "version": "0.1.0",
+      "source": "./plugins/structure-and-conventions",
+      "author": {
+        "name": "Giorgos Marinos"
+      }
+    }
+  ]
+}
